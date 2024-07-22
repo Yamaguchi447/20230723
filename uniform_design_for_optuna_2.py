@@ -105,14 +105,14 @@ class UniformDesignSampler(BaseSampler):
         # グリッドを使い果たしたかの確認
         if trial.number >= len(self._ud_space) - 1:
             # グリッドの生成
-            new_stat = pydoe.gen_aud(xp=self._base_ud, n=self._base_ud.shape[0] + 20, s=self._num_params, q=self._discretization_level, crit="CD2", maxiter=100, random_state=self._seed)
+            new_stat = pydoe.gen_aud(xp=self._base_ud, n=self._base_ud.shape[0] + discretization_level, s=self._num_params, q=self._discretization_level, crit="CD2", maxiter=100, random_state=self._seed)
             new_base_ud = new_stat["final_design"]
             
             # 新しいサンプルを追加
-            new_ud_space = np.zeros((20, self._num_params))
+            new_ud_space = np.zeros((discretization_level, self._num_params))
             ud_space = np.repeat(np.linspace(1 / (2 * self._discretization_level), 1 - 1 / (2 * self._discretization_level), self._discretization_level).reshape([-1, 1]), self._num_params, axis=1)
             for i in range(self._num_params):
-                new_ud_space[:, i] = ud_space[new_base_ud[-20:, i] - 1, i]
+                new_ud_space[:, i] = ud_space[new_base_ud[-discretization_level:, i] - 1, i]
 
             # 新しいグリッドを既存のものに追加
             self._ud_space = np.vstack([self._ud_space, new_ud_space])
